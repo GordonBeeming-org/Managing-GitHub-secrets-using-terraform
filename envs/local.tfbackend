@@ -1,0 +1,4 @@
+resource_group_name   = "demo2-shared-rg"
+storage_account_name  = "demo2dso"
+container_name        = "tfstate"
+key                   = "local.tfstate"
