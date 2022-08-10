@@ -28,3 +28,13 @@ resource "azurerm_role_assignment" "app_mainstorage_access" {
   role_definition_name = "Reader and Data Access"
   principal_id         = azurerm_user_assigned_identity.app.principal_id
 }
+
+resource "azurerm_storage_container" "demo" {
+  name                  = "demo"
+  storage_account_name  = azurerm_storage_account.main.name
+  container_access_type = "private"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}

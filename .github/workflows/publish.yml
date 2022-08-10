@@ -1,0 +1,40 @@
+name: publish
+
+on:
+  push:
+    branches: [ "main","demo" ]
+
+jobs:
+  copy-files:
+    continue-on-error: false
+    strategy:
+      matrix:
+        environment: [local, test, production]
+    runs-on: ubuntu-latest
+    environment: ${{ matrix.environment }}
+    permissions:
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.ARM_CLIENT_ID }}
+          tenant-id: ${{ secrets.ARM_TENANT_ID }}
+          subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+
+      - name: Upload File
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.36.0
+          inlineScript: |
+            az storage blob upload --account-name demo2${{ matrix.environment }}dso --file vm.sh --container-name demo --name vm.sh --overwrite
+
+      - name: logout
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.36.0
+          inlineScript: |
+            az logout
+          
