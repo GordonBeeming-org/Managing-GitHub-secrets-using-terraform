@@ -20,6 +20,15 @@ resource "azurerm_user_assigned_identity" "app" {
   name = "${var.environment_name}-app-user"
 }
 
+resource "azuread_application_federated_identity_credential" "gh" {
+  application_object_id = azuread_application.main.object_id
+  display_name          = "gh-demo2-${var.environment_name}-Managing-GitHub-secrets-using-terraform"
+  description           = "Deployments for Managing-GitHub-secrets-using-terraform"
+  audiences             = ["api://AzureADTokenExchange"]
+  issuer                = "https://token.actions.githubusercontent.com"
+  subject               = "repo:DevStarOps-org/Managing-GitHub-secrets-using-terraform:environment:${var.environment_name}"
+}
+
 output "azure_app" {
   value = azuread_application.main.display_name
 }
