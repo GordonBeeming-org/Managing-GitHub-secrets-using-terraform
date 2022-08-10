@@ -11,6 +11,15 @@ provider "azurerm" {
 
 data "azurerm_client_config" "current" {}
 
+provider "github" {
+  token = var.github_token
+  owner = "devstarops-org"
+}
+
+data "github_user" "current" {
+  username = "devstarops"
+}
+
 output "tenant_id" {
   value = data.azurerm_client_config.current.tenant_id
 }

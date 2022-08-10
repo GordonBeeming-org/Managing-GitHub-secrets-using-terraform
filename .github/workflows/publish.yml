@@ -1,0 +1,28 @@
+name: publish
+
+on:
+  push:
+    branches: [ "main","demo" ]
+
+jobs:
+  copy-files:
+    continue-on-error: false
+    strategy:
+      matrix:
+        environment: [local, test, production]
+    runs-on: ubuntu-latest
+    environment: ${{ matrix.environment }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Upload File
+        uses: azure/CLI@v1
+        env:
+          STORAGE_CONNECTION: ${{ secrets.STORAGE_CONNECTION }}
+        with:
+          azcliversion: 2.36.0
+          inlineScript: |
+            az storage blob upload --account-name demo2${{ matrix.environment }}dso --file README.md --container-name demo --name README.md --overwrite --connection-string $STORAGE_CONNECTION
+
+          
