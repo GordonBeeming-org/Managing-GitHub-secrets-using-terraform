@@ -2,7 +2,7 @@ name: publish
 
 on:
   push:
-    branches: [ "main","demo" ]
+    branches: [ "main" ]
 
 jobs:
   copy-files:
@@ -16,13 +16,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.ARM_CLIENT_ID }}
+          tenant-id: ${{ secrets.ARM_TENANT_ID }}
+          subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+
       - name: Upload File
         uses: azure/CLI@v1
-        env:
-          STORAGE_CONNECTION: ${{ secrets.STORAGE_CONNECTION }}
         with:
           azcliversion: 2.36.0
           inlineScript: |
-            az storage blob upload --account-name demo2${{ matrix.environment }}dso --file vm.sh --container-name demo --name README.md --overwrite --connection-string $STORAGE_CONNECTION
+            az storage blob upload --account-name demo2${{ matrix.environment }}dso --file vm.sh --container-name demo --name vm.sh --overwrite
 
+      - name: Upload File
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.36.0
+          inlineScript: |
+            az storage blob upload --account-name demo2localdso --file vm.sh --container-name demo --name vm-local.sh --overwrite
+
+      - name: logout
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.36.0
+          inlineScript: |
+            az logout
           
